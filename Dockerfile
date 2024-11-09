@@ -5,7 +5,8 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copia el archivo JAR de la aplicación desde tu máquina local al contenedor
-COPY target/hello-world-java-0.0.1-SNAPSHOT.jar /app/hello-world-java.jar
+COPY target/hello_world_Java-0.0.1-SNAPSHOT.jar /app/hello-world-java.jar
+
 
 # Expone el puerto 8081 (puerto en el que tu aplicación Spring Boot se ejecuta por defecto)
 EXPOSE 8081
