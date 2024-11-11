@@ -57,5 +57,5 @@ docker rm java_app
    - An image of the execution is attached
 
 
-      (![image](https://github.com/user-attachments/assets/f6299f82-eb93-43b6-b979-18fba734089a))
+      ![image](https://github.com/user-attachments/assets/f6299f82-eb93-43b6-b979-18fba734089a)
 
