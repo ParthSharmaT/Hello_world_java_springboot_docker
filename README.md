@@ -43,7 +43,7 @@ docker rm java_app
 ~~~
 ---
 ---
-#Aditional Information
+# Aditional Information
    - Currently the repository uses the RailWay service to simulate a production environment. 
       The link to verify the service is as follows
      
