@@ -3,6 +3,9 @@ pipeline {
     parameters {
         choice(name: 'Environment', choices: ['Dev', 'Prod'], description: 'Select the environment to deploy')
     }
+    tools {
+    maven 'Maven3'
+    }
     environment {
         SONAR_HOST_URL = 'https://sonarcloud.io'
         SONAR_TOKEN=credentials('sonarcloud-token')
