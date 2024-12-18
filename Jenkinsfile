@@ -5,7 +5,6 @@ pipeline {
     }
     environment {
         SONAR_HOST_URL = 'https://sonarcloud.io'
-        SONAR_TOKEN = credentials('sonarcloud-token') // Replace with your SonarCloud token ID
         SONAR_TOKEN=credentials('sonarcloud-token')
         DOCKER_IMAGE = "parthsharma/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
         ARTIFACTORY_REPO = "java-project-repo/${params.Environment}"
