@@ -26,9 +26,14 @@ pipeline {
             }
         }
         stage('Execute Sonar Analysis') {
+            environment {
+                scannerHome = tool 'Sonar'
+            }
             steps {
-                withSonarQubeEnv('SonarCloud') {
-                    sh 'mvn sonar:sonar'
+                script {
+                    withSonarQubeEnv('Sonar') {
+                      sh "mvn clean verify sonar:sonar -Dsonar.projectKey=JenkinsProject -Dsonar.projectName='JenkinsProject'"
+                    }
                 }
             }
         }
