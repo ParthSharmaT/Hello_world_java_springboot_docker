@@ -10,7 +10,7 @@ pipeline {
         SONAR_HOST_URL = 'https://sonarcloud.io'
         SONAR_TOKEN=credentials('sonarcloud-token')
         DOCKER_IMAGE = "parthsharma/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
-        ARTIFACTORY_REPO = "java-project-repo/${params.Environment}"
+        ARTIFACTORY_REPO = "java-project-repo"
         APP_PORT = "${params.Environment == 'Dev' ? '8083':'8084'}"
         ARTIFACTORY_SERVER_ID='Artifactory'
     }
