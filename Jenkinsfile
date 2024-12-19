@@ -72,7 +72,7 @@ pipeline {
                     docker ps -q --filter "name=${containerName}" | grep -q . && docker stop ${containerName} && docker rm ${containerName} || true
                     
                     # Run a new container with the appropriate port
-                    docker run -d --name ${containerName} -p ${APP_PORT}:8081 $DOCKER_IMAGE --server.port=${APP_PORT}
+                    docker run -d --name ${containerName} -p ${APP_PORT}:${APP_PORT} $DOCKER_IMAGE --server.port=${APP_PORT}
                     """
                 }
             }
