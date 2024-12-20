@@ -80,12 +80,12 @@ pipeline {
     }
     post {
         success {
-            mail to: 'your-email@example.com',
+            mail to: 'parthsharmatanguriya@gmail.com',
                  subject: "Jenkins Pipeline: ${params.Environment} Deployment Successful",
                  body: "The ${params.Environment} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp"
         }
         failure {
-            mail to: 'your-email@example.com',
+            mail to: 'parthsharmatanguriya@gmail.com',
                  subject: "Jenkins Pipeline: ${params.Environment} Deployment Failed",
                  body: "The ${params.Environment} deployment has failed. Please check the Jenkins logs for more details."
         }
