@@ -76,16 +76,17 @@ pipeline {
             }
         }
     }
-    post {
+   post {
         success {
-            mail to: 'parthsharmatanguriya@gmail.com',
+            emailext body: "The ${params.Environment} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp",
                  subject: "Jenkins Pipeline: ${params.Environment} Deployment Successful",
-                 body: "The ${params.Environment} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp"
+                 recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
+                 
         }
         failure {
-            mail to: 'parthsharmatanguriya@gmail.com',
-                 subject: "Jenkins Pipeline: ${params.Environment} Deployment Failed",
-                 body: "The ${params.Environment} deployment has failed. Please check the Jenkins logs for more details."
+            emailext subject: "Jenkins Pipeline: ${params.Environment} Deployment Failed",
+                 body: "The ${params.Environment} deployment has failed. Please check the Jenkins logs for more details.",
+                 recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
     }
 }
