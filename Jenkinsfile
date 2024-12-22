@@ -25,6 +25,11 @@ pipeline {
                 sh 'mvn clean package -DskipTests'
             }
         }
+        stage('Execute Test Cases') {
+            steps {
+                sh 'mvn test'
+            }
+        }
          stage('Execute Sonar Analysis') {
             environment {
                 scannerHome = tool 'Sonar'
