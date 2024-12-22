@@ -35,6 +35,10 @@ pipeline {
                 script {
                     withSonarQubeEnv('Sonar') {
                         sh "mvn clean verify sonar:sonar -Dsonar.projectKey=JenkinsProject -Dsonar.projectName='JenkinsProject'"
+                        sh "mvn sonar:sonar \
+                        -Dsonar.projectKey=JenkinsProject \
+                        -Dsonar.projectName='JenkinsProject' \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
                     }
                 }
             }
