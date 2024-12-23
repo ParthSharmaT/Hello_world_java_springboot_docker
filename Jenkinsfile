@@ -87,18 +87,23 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Application') {
+       stage('Deploy Application') {
             steps {
                 script {
                     def containerName = "hello-world-${env.BRANCH_NAME.toLowerCase()}"
                     sh """
-                    docker ps -q --filter "name=${containerName}" | grep -q . && docker stop ${containerName} && docker rm ${containerName} || true
+                    if [ \$(docker ps -a -q --filter "name=${containerName}") ]; then
+                        echo "Stopping and removing existing container: ${containerName}"
+                        docker stop ${containerName} || true
+                        docker rm ${containerName} || true
+                    fi
                     
                     docker run -d --name ${containerName} -p ${APP_PORT}:${APP_PORT} $DOCKER_IMAGE --server.port=${APP_PORT}
                     """
                 }
             }
         }
+
     }
     post {
         success {
