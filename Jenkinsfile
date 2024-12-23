@@ -18,16 +18,20 @@ pipeline {
                 script {
             
 
-                    if (env.GIT_BRANCH) {
+                     if (currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)) {
+                     
+                        echo "Pipeline triggered manually. Branch: ${params.Environment}"
+                        env.BRANCH_NAME = params.Environment
+                        env.DOCKER_IMAGE = "hacktom007/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
+                        env.APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}"
+                    } else if (env.GIT_BRANCH) {
+                      
                         echo "Pipeline triggered by webhook. Branch: ${env.GIT_BRANCH}"
                         env.BRANCH_NAME = env.GIT_BRANCH.replace("origin/", "")
                         env.DOCKER_IMAGE = "hacktom007/hello-world-springboot-${env.BRANCH_NAME.toLowerCase()}:${env.BUILD_ID}"
                         env.APP_PORT = "${env.BRANCH_NAME == 'Dev' ? '8083' : '8084'}"
                     } else {
-                        echo "Pipeline triggered manually. Branch: ${params.Environment}"
-                        env.BRANCH_NAME = params.Environment
-                        env.DOCKER_IMAGE = "hacktom007/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
-                        env.APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}"
+                        error "Unable to detect the branch. Please verify the configuration."
                     }
                     
                     echo "Checking out branch: ${env.BRANCH_NAME}"
