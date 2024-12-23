@@ -1,29 +1,49 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven3'
+    parameters {
+        
+        choice(name: 'Environment', choices: ['Dev', 'Prod'], description: 'Select the environment to deploy')
     }
     environment {
         SONAR_HOST_URL = 'https://sonarcloud.io'
         SONAR_TOKEN = credentials('sonarcloud-token')
-        DOCKER_IMAGE = "hacktom007/hello-world-springboot-${env.BRANCH_NAME.toLowerCase()}:${env.BUILD_ID}"
+        DOCKER_IMAGE = "hacktom007/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
         ARTIFACTORY_REPO = "java-project-repo"
-        APP_PORT = "${env.BRANCH_NAME == 'Dev' ? '8083' : '8084'}"
+        APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}" // Use parameterized environment
         ARTIFACTORY_SERVER_ID = 'Artifactory'
     }
     stages {
+        stage('Set Environment for Automatic Trigger') {
+            when {
+                expression { return env.BRANCH_NAME != null }
+            }
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'Dev') {
+                        currentBuild.displayName = "Dev - ${env.BUILD_ID}"
+                        params.Environment = 'Dev'
+                    } else if (env.BRANCH_NAME == 'Prod') {
+                        currentBuild.displayName = "Prod - ${env.BUILD_ID}"
+                        params.Environment = 'Prod'
+                    }
+                }
+            }
+        }
         stage('Checkout Code') {
             steps {
-                git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
+                // Checkout code based on the branch name (automatically detected by Jenkins)
+                git branch: "${params.Environment.toLowerCase()}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
             }
         }
         stage('Build Application') {
             steps {
+                // Build the application using Maven
                 sh 'mvn clean package -DskipTests'
             }
         }
         stage('Execute Test Cases') {
             steps {
+                // Run tests using Maven
                 sh 'mvn test'
             }
         }
@@ -33,6 +53,7 @@ pipeline {
             }
             steps {
                 script {
+                    // Run SonarQube analysis
                     withSonarQubeEnv('Sonar') {
                         sh "mvn clean verify sonar:sonar -Dsonar.projectKey=JenkinsProject -Dsonar.projectName='JenkinsProject'"
                         sh "mvn sonar:sonar \
@@ -43,10 +64,9 @@ pipeline {
                 }
             }
         }
-
-        
         stage('Upload Artifacts to Artifactory') {
             steps {
+                // Upload the built artifact to Artifactory
                 rtUpload serverId: env.ARTIFACTORY_SERVER_ID, spec: '''{
                     "files": [
                         {
@@ -60,12 +80,13 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker --version'
+                // Build the Docker image
                 sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
         stage('Push Docker Image') {
             steps {
+                // Push the Docker image to Docker Hub
                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
                     sh 'docker push $DOCKER_IMAGE'
                 }
@@ -74,10 +95,12 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 script {
-                    def containerName = "hello-world-${env.BRANCH_NAME.toLowerCase()}"
+                    def containerName = "hello-world-${params.Environment.toLowerCase()}"
+                    // Check if the container is running and remove it if it is
                     sh """
                     docker ps -q --filter "name=${containerName}" | grep -q . && docker stop ${containerName} && docker rm ${containerName} || true
                     
+                    // Deploy the application to the selected port
                     docker run -d --name ${containerName} -p ${APP_PORT}:${APP_PORT} $DOCKER_IMAGE --server.port=${APP_PORT}
                     """
                 }
@@ -86,13 +109,15 @@ pipeline {
     }
     post {
         success {
-            emailext body: "The ${env.BRANCH_NAME} environment has been successfully deployed.\\nURL: http://4.240.109.238:${APP_PORT}",
-                     subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Successful",
+            // Send an email notification on success
+            emailext body: "The ${params.Environment} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp",
+                     subject: "Jenkins Pipeline: ${params.Environment} Deployment Successful",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
         failure {
-            emailext subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Failed",
-                     body: "The ${env.BRANCH_NAME} deployment has failed. Please check the Jenkins logs for more details.",
+            // Send an email notification on failure
+            emailext subject: "Jenkins Pipeline: ${params.Environment} Deployment Failed",
+                     body: "The ${params.Environment} deployment has failed. Please check the Jenkins logs for more details.",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
     }
