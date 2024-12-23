@@ -16,6 +16,8 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 script {
+            
+
                     if (env.GIT_BRANCH) {
                         echo "Pipeline triggered by webhook. Branch: ${env.GIT_BRANCH}"
                         env.BRANCH_NAME = env.GIT_BRANCH.replace("origin/", "")
@@ -29,7 +31,6 @@ pipeline {
                     }
                     
                     echo "Checking out branch: ${env.BRANCH_NAME}"
-                    echo "App will run on PORT : ${env.APP_PORT}"
                     // Checkout the code based on the dynamically set branch
                     git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 }
