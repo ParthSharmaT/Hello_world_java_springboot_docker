@@ -39,16 +39,12 @@ pipeline {
         }
         stage('Checkout Code') {
             steps {
-                script {
-                    checkout scm
-                    echo "Checking out branch: ${BRANCH_NAME}"
-                }
-            }
-        }
-        stage('Checkout Code') {
-            steps {
             
                 git branch: "${params.Environment}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
+                script {
+                    
+                    echo "Checking out branch: ${BRANCH_NAME}"
+                }
             }
         }
         stage('Build Application') {
