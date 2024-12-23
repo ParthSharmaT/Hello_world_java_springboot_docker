@@ -32,7 +32,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 // Checkout code based on the branch name (automatically detected by Jenkins)
-                git branch: "${params.Environment.toLowerCase()}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
+                git branch: "${params.Environment}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
             }
         }
         stage('Build Application') {
