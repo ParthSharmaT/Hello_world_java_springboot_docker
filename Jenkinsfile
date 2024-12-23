@@ -15,7 +15,8 @@ pipeline {
     stages {
         stage('Set Environment for Automatic Trigger') {
             when {
-                expression { return env.BRANCH_NAME != null }
+                 branch 'Dev'
+                 branch 'Prod'
             }
             steps {
                 script {
