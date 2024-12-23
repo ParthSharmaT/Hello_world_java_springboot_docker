@@ -109,11 +109,13 @@ pipeline {
         success {
             emailext body: "The ${env.BRANCH_NAME} environment has been successfully deployed.\\nURL: http://4.240.109.238:8084:${APP_PORT}",
                      subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Successful",
+                     to: 'parthsharmatanguriya@gmail.com',
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
         failure {
             emailext subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Failed",
                      body: "The ${env.BRANCH_NAME} deployment has failed. Please check the Jenkins logs for more details.",
+                     to: 'parthsharmatanguriya@gmail.com',
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
     }
