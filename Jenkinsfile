@@ -1,7 +1,6 @@
 pipeline {
     agent any
     parameters {
-        
         choice(name: 'Environment', choices: ['Dev', 'Prod'], description: 'Select the environment to deploy')
     }
     environment {
@@ -16,7 +15,6 @@ pipeline {
         maven 'Maven3'
     }
     stages {
-
         stage('Set Environment for Automatic Trigger in Dev') {
             when {
                 branch 'Dev'
@@ -39,23 +37,19 @@ pipeline {
         }
         stage('Checkout Code') {
             steps {
-            
                 git branch: "${params.Environment}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 script {
-                    
-                    echo "Checking out branch: ${BRANCH_NAME}"
+                    echo "Checking out branch: ${params.Environment}"
                 }
             }
         }
         stage('Build Application') {
             steps {
-             
                 sh 'mvn clean package -DskipTests'
             }
         }
         stage('Execute Test Cases') {
             steps {
-              
                 sh 'mvn test'
             }
         }
@@ -65,7 +59,6 @@ pipeline {
             }
             steps {
                 script {
-                   
                     withSonarQubeEnv('Sonar') {
                         sh "mvn clean verify sonar:sonar -Dsonar.projectKey=JenkinsProject -Dsonar.projectName='JenkinsProject'"
                         sh "mvn sonar:sonar \
@@ -78,7 +71,6 @@ pipeline {
         }
         stage('Upload Artifacts to Artifactory') {
             steps {
-              
                 rtUpload serverId: env.ARTIFACTORY_SERVER_ID, spec: '''{
                     "files": [
                         {
@@ -92,13 +84,11 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-               
                 sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
         stage('Push Docker Image') {
             steps {
-               
                 withDockerRegistry([credentialsId: 'docker-hub-credentials', url: 'https://index.docker.io/v1/']) {
                     sh 'docker push $DOCKER_IMAGE'
                 }
