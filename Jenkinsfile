@@ -11,6 +11,9 @@ pipeline {
         APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}" // Use parameterized environment
         ARTIFACTORY_SERVER_ID = 'Artifactory'
     }
+    tools {
+        maven 'Maven3'
+    }
     stages {
         stage('Checkout Code') {
             steps {
