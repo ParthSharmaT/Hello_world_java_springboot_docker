@@ -17,12 +17,12 @@ pipeline {
             steps {
                 script {
                     if (env.GIT_BRANCH) {
-                        echo "Pipeline triggered by webhook. Branch is ${env.GIT_BRANCH}"
+                        echo "Pipeline triggered by webhook. Branch: ${env.GIT_BRANCH}"
                         env.BRANCH_NAME = env.GIT_BRANCH.replace("origin/", "")
                         env.DOCKER_IMAGE = "hacktom007/hello-world-springboot-${env.BRANCH_NAME.toLowerCase()}:${env.BUILD_ID}"
                         env.APP_PORT = "${env.BRANCH_NAME == 'Dev' ? '8083' : '8084'}"
                     } else {
-                        echo "Pipeline triggered manually. Branch is ${params.Environment}"
+                        echo "Pipeline triggered manually. Branch: ${params.Environment}"
                         env.BRANCH_NAME = params.Environment
                         env.DOCKER_IMAGE = "hacktom007/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
                         env.APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}"
