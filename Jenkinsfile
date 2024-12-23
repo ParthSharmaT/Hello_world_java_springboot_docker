@@ -17,7 +17,7 @@ pipeline {
     }
     stages {
 
-        stage('Set Environment for Automatic Trigger') {
+        stage('Set Environment for Automatic Trigger in Dev') {
             when {
                 branch 'Dev'
             }
@@ -27,7 +27,7 @@ pipeline {
                 }
             }
         }
-        stage('Set Environment for Automatic Trigger') {
+        stage('Set Environment for Automatic Trigger in Prod') {
             when {
                 branch 'Prod'
             }
