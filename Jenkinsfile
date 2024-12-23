@@ -16,8 +16,6 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 script {
-            
-
                      if (currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)) {
                      
                         echo "Pipeline triggered manually. Branch: ${params.Environment}"
