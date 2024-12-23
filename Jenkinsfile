@@ -39,7 +39,6 @@ pipeline {
                         -Dsonar.projectKey=JenkinsProject \
                         -Dsonar.projectName='JenkinsProject' \
                         -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
-
                     }
                 }
             }
@@ -61,6 +60,7 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
+                sh 'docker --version'
                 sh 'docker build -t $DOCKER_IMAGE .'
             }
         }
