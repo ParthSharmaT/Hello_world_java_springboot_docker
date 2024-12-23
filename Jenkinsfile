@@ -15,31 +15,13 @@ pipeline {
         maven 'Maven3'
     }
     stages {
-        stage('Set Environment for Automatic Trigger in Dev') {
-            when {
-                branch 'Dev'
-            }
-            steps {
-                script {
-                    env.BRANCH_NAME = 'Dev'
-                }
-            }
-        }
-        stage('Set Environment for Automatic Trigger in Prod') {
-            when {
-                branch 'Prod'
-            }
-            steps {
-                script {
-                    env.BRANCH_NAME = 'Prod'
-                }
-            }
-        }
+       
         stage('Checkout Code') {
             steps {
                 git branch: "${params.Environment}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 script {
                     echo "Checking out branch: ${params.Environment}"
+                    echo " The git BRANCH IS: ${env.GIT_BRANCH}"
                 }
             }
         }
