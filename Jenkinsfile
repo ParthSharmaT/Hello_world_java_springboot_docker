@@ -8,7 +8,7 @@ pipeline {
         SONAR_TOKEN = credentials('sonarcloud-token')
         DOCKER_IMAGE = "hacktom007/hello-world-springboot-${params.Environment.toLowerCase()}:${env.BUILD_ID}"
         ARTIFACTORY_REPO = "java-project-repo"
-        APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}" // Use parameterized environment
+        APP_PORT = "${params.Environment == 'Dev' ? '8083' : '8084'}"
         ARTIFACTORY_SERVER_ID = 'Artifactory'
     }
     tools {
@@ -22,6 +22,8 @@ pipeline {
                     if (env.GIT_BRANCH) {
                         echo "Pipeline triggered by webhook. Branch: ${env.GIT_BRANCH}"
                         env.BRANCH_NAME = env.GIT_BRANCH.replace("origin/", "")
+                        DOCKER_IMAGE = "hacktom007/hello-world-springboot-${env.BRANCH_NAME.toLowerCase()}:${env.BUILD_ID}"
+                        APP_PORT = "${env.BRANCH_NAME == 'Dev' ? '8083': '8084'}" 
                     } else {
                         echo "Pipeline triggered manually. Branch: ${params.Environment}"
                         env.BRANCH_NAME = params.Environment
