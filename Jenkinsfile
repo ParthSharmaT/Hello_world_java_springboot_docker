@@ -15,13 +15,21 @@ pipeline {
         maven 'Maven3'
     }
     stages {
-       
         stage('Checkout Code') {
             steps {
-                git branch: "${params.Environment}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 script {
-                    echo "Checking out branch: ${params.Environment}"
-                    echo " The git BRANCH IS: ${env.GIT_BRANCH}"
+            
+                    if (env.GIT_BRANCH) {
+                        echo "Pipeline triggered by webhook. Branch: ${env.GIT_BRANCH}"
+                        env.BRANCH_NAME = env.GIT_BRANCH.replace("origin/", "")
+                    } else {
+                        echo "Pipeline triggered manually. Branch: ${params.Environment}"
+                        env.BRANCH_NAME = params.Environment
+                    }
+                    
+                    echo "Checking out branch: ${env.BRANCH_NAME}"
+                    // Checkout the code based on the dynamically set branch
+                    git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 }
             }
         }
@@ -79,12 +87,10 @@ pipeline {
         stage('Deploy Application') {
             steps {
                 script {
-                    def containerName = "hello-world-${params.Environment.toLowerCase()}"
-                    // Check if the container is running and remove it if it is
+                    def containerName = "hello-world-${env.BRANCH_NAME.toLowerCase()}"
                     sh """
                     docker ps -q --filter "name=${containerName}" | grep -q . && docker stop ${containerName} && docker rm ${containerName} || true
                     
-                    // Deploy the application to the selected port
                     docker run -d --name ${containerName} -p ${APP_PORT}:${APP_PORT} $DOCKER_IMAGE --server.port=${APP_PORT}
                     """
                 }
@@ -93,15 +99,13 @@ pipeline {
     }
     post {
         success {
-            // Send an email notification on success
-            emailext body: "The ${params.Environment} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp",
-                     subject: "Jenkins Pipeline: ${params.Environment} Deployment Successful",
+            emailext body: "The ${env.BRANCH_NAME} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp",
+                     subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Successful",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
         failure {
-            // Send an email notification on failure
-            emailext subject: "Jenkins Pipeline: ${params.Environment} Deployment Failed",
-                     body: "The ${params.Environment} deployment has failed. Please check the Jenkins logs for more details.",
+            emailext subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Failed",
+                     body: "The ${env.BRANCH_NAME} deployment has failed. Please check the Jenkins logs for more details.",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
     }
