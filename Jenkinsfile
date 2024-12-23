@@ -101,7 +101,7 @@ pipeline {
     }
     post {
         success {
-            emailext body: "The ${env.BRANCH_NAME} environment has been successfully deployed.\\nURL: http://localhost:${APP_PORT}/testapp",
+            emailext body: "The ${env.BRANCH_NAME} environment has been successfully deployed.\\nURL: http://4.240.109.238:8084:${APP_PORT}",
                      subject: "Jenkins Pipeline: ${env.BRANCH_NAME} Deployment Successful",
                      recipientProviders: [[$class: 'DevelopersRecipientProvider'], [$class: 'RequesterRecipientProvider']]
         }
