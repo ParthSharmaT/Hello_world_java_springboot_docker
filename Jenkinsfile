@@ -33,7 +33,6 @@ pipeline {
                     }
                     
                     echo "Checking out branch: ${env.BRANCH_NAME}"
-                    // Checkout the code based on the dynamically set branch
                     git branch: "${env.BRANCH_NAME}", url: 'https://github.com/ParthSharmaT/Hello_world_java_springboot_docker.git'
                 }
             }
